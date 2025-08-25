@@ -1,0 +1,1606 @@
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JusApp - Aplikasi Penjualan Jus</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    #sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+    #sidebar::-webkit-scrollbar-thumb {
+      background-color: rgba(34,197,94,0.5);
+      border-radius: 3px;
+    }
+    /* Kalkulator modal scrollbar fix */
+    #calcDisplay::-webkit-scrollbar {
+      height: 6px;
+    }
+    #calcDisplay::-webkit-scrollbar-thumb {
+      background-color: rgba(34,197,94,0.5);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-800 min-h-screen flex flex-col">
+
+  <div id="app" class="flex flex-1 min-h-0 overflow-hidden">
+    <!-- Sidebar Navigation -->
+    <nav
+      id="sidebar"
+      class="bg-white border-r border-gray-200 w-64 flex-shrink-0 flex flex-col fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-30"
+      aria-label="Sidebar Navigation"
+    >
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+        <h1 class="text-2xl font-bold text-green-600 select-none">JusApp</h1>
+        <button
+          id="closeSidebarBtn"
+          class="md:hidden text-gray-600 hover:text-green-600 focus:outline-none"
+          aria-label="Close sidebar"
+        >
+          <i class="fas fa-times fa-lg"></i>
+        </button>
+      </div>
+      <ul class="flex flex-col mt-4 space-y-1 overflow-y-auto px-2 pb-6">
+        <li>
+          <button
+            data-tab="dashboard"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-md text-green-700 bg-green-100 font-semibold focus:outline-none focus:ring-2 focus:ring-green-400"
+          >
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </button>
+        </li>
+        <li>
+          <button
+            data-tab="penjualan"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-md hover:bg-green-50 text-green-700 font-semibold focus:outline-none focus:ring-2 focus:ring-green-400"
+          >
+            <i class="fas fa-shopping-cart"></i> Penjualan
+          </button>
+        </li>
+        <li>
+          <button
+            data-tab="pengeluaran"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-md hover:bg-green-50 text-green-700 font-semibold focus:outline-none focus:ring-2 focus:ring-green-400"
+          >
+            <i class="fas fa-wallet"></i> Pengeluaran
+          </button>
+        </li>
+        <li>
+          <button
+            data-tab="pemasukan"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-md hover:bg-green-50 text-green-700 font-semibold focus:outline-none focus:ring-2 focus:ring-green-400"
+          >
+            <i class="fas fa-cash-register"></i> Pemasukan
+          </button>
+        </li>
+        <li>
+          <button
+            data-tab="profit"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-md hover:bg-green-50 text-green-700 font-semibold focus:outline-none focus:ring-2 focus:ring-green-400"
+          >
+            <i class="fas fa-coins"></i> Profit
+          </button>
+        </li>
+        <li>
+          <button
+            data-tab="grafik"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-md hover:bg-green-50 text-green-700 font-semibold focus:outline-none focus:ring-2 focus:ring-green-400"
+          >
+            <i class="fas fa-chart-bar"></i> Grafik / Laporan
+          </button>
+        </li>
+        <li>
+          <button
+            data-tab="kalkulator"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-md hover:bg-green-50 text-green-700 font-semibold focus:outline-none focus:ring-2 focus:ring-green-400"
+          >
+            <i class="fas fa-calculator"></i> Kalkulator
+          </button>
+        </li>
+        <li class="mt-auto px-4 py-4 border-t border-gray-200">
+          <button
+            id="resetDataBtn"
+            class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-md bg-red-600 text-white font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+          >
+            <i class="fas fa-trash-alt"></i> Reset Data
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Mobile top bar -->
+    <header
+      class="md:hidden fixed top-0 left-0 right-0 bg-white border-b border-gray-200 flex items-center justify-between px-4 h-14 z-20 shadow-sm"
+    >
+      <button
+        id="openSidebarBtn"
+        class="text-green-700 focus:outline-none focus:ring-2 focus:ring-green-400"
+        aria-label="Open sidebar"
+      >
+        <i class="fas fa-bars fa-lg"></i>
+      </button>
+      <h1 class="text-lg font-bold text-green-600 select-none">JusApp</h1>
+      <div class="w-6"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main
+      id="mainContent"
+      class="flex-1 overflow-y-auto pt-14 md:pt-0 md:ml-64 px-4 md:px-8 pb-8"
+      tabindex="0"
+    >
+      <!-- Dashboard Tab -->
+      <section data-content="dashboard" class="tab-content max-w-4xl mx-auto">
+        <h2 class="text-2xl font-bold text-green-700 mb-6">Dashboard</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div
+            class="bg-white rounded-lg shadow p-5 flex flex-col items-center justify-center"
+          >
+            <div class="text-green-600 text-4xl font-extrabold" id="omzetHarian"
+              >Rp 0</div>
+            <div class="mt-2 text-gray-600 font-semibold">Omzet Kotor Harian</div>
+          </div>
+          <div
+            class="bg-white rounded-lg shadow p-5 flex flex-col items-center justify-center"
+          >
+            <div class="text-green-600 text-4xl font-extrabold" id="omzetMingguan"
+              >Rp 0</div>
+            <div class="mt-2 text-gray-600 font-semibold">Omzet Kotor Mingguan</div>
+          </div>
+          <div
+            class="bg-white rounded-lg shadow p-5 flex flex-col items-center justify-center"
+          >
+            <div class="text-green-600 text-4xl font-extrabold" id="omzetBulanan"
+              >Rp 0</div>
+            <div class="mt-2 text-gray-600 font-semibold">Omzet Kotor Bulanan</div>
+          </div>
+          <div
+            class="bg-white rounded-lg shadow p-5 flex flex-col items-center justify-center"
+          >
+            <div class="text-blue-600 text-4xl font-extrabold" id="profitHarian"
+              >Rp 0</div>
+            <div class="mt-2 text-gray-600 font-semibold">Profit Harian</div>
+          </div>
+          <div
+            class="bg-white rounded-lg shadow p-5 flex flex-col items-center justify-center"
+          >
+            <div class="text-blue-600 text-4xl font-extrabold" id="profitMingguan"
+              >Rp 0</div>
+            <div class="mt-2 text-gray-600 font-semibold">Profit Mingguan</div>
+          </div>
+          <div
+            class="bg-white rounded-lg shadow p-5 flex flex-col items-center justify-center"
+          >
+            <div class="text-blue-600 text-4xl font-extrabold" id="profitBulanan"
+              >Rp 0</div>
+            <div class="mt-2 text-gray-600 font-semibold">Profit Bulanan</div>
+          </div>
+        </div>
+        <div class="mt-8 flex justify-center">
+          <button
+            id="openCalcFromDashboard"
+            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-semibold flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-green-400"
+          >
+            <i class="fas fa-calculator"></i> Kalkulator
+          </button>
+        </div>
+      </section>
+
+      <!-- Penjualan Tab -->
+      <section data-content="penjualan" class="tab-content max-w-5xl mx-auto hidden">
+        <h2 class="text-2xl font-bold text-green-700 mb-6">Penjualan</h2>
+
+        <!-- Menu Management -->
+        <div class="bg-white rounded-lg shadow p-5 mb-8">
+          <h3 class="text-lg font-semibold text-green-700 mb-4">Daftar Menu & Harga</h3>
+          <form id="menuForm" class="flex flex-col sm:flex-row gap-4 items-center">
+            <input
+              type="text"
+              id="menuNameInput"
+              placeholder="Nama Menu"
+              class="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+              required
+            />
+            <input
+              type="number"
+              id="menuPriceInput"
+              placeholder="Harga (Rp)"
+              min="0"
+              class="w-32 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+              required
+            />
+            <input
+              type="number"
+              id="menuProfitInput"
+              placeholder="Profit %"
+              min="0"
+              max="100"
+              class="w-24 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+              required
+            />
+            <button
+              type="submit"
+              id="menuAddBtn"
+              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-semibold transition"
+            >
+              Tambah
+            </button>
+            <button
+              type="button"
+              id="menuUpdateBtn"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-semibold transition hidden"
+            >
+              Update
+            </button>
+            <button
+              type="button"
+              id="menuCancelBtn"
+              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold transition hidden"
+            >
+              Batal
+            </button>
+          </form>
+          <div class="overflow-x-auto mt-4">
+            <table class="w-full text-left text-gray-700">
+              <thead class="border-b border-gray-300">
+                <tr>
+                  <th class="py-2 px-3">Nama Menu</th>
+                  <th class="py-2 px-3 w-32">Harga (Rp)</th>
+                  <th class="py-2 px-3 w-24">Profit %</th>
+                  <th class="py-2 px-3 w-28 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="menuList" class="divide-y divide-gray-200"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Form Input Penjualan -->
+        <div class="bg-white rounded-lg shadow p-5 mb-8">
+          <h3 class="text-lg font-semibold text-green-700 mb-4">Input Penjualan Harian</h3>
+          <form id="salesForm" class="flex flex-col sm:flex-row sm:items-center gap-4">
+            <select
+              id="salesMenuSelect"
+              class="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+              required
+            >
+              <option value="" disabled selected>Pilih Menu</option>
+            </select>
+            <input
+              type="number"
+              id="salesQtyInput"
+              placeholder="Jumlah Porsi"
+              min="1"
+              class="w-28 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+              required
+            />
+            <input
+              type="text"
+              id="salesOmzetDisplay"
+              placeholder="Omzet (Rp)"
+              readonly
+              class="w-36 bg-gray-100 border border-gray-300 rounded px-3 py-2 text-gray-700"
+            />
+            <input
+              type="text"
+              id="salesProfitDisplay"
+              placeholder="Profit (Rp)"
+              readonly
+              class="w-36 bg-gray-100 border border-gray-300 rounded px-3 py-2 text-gray-700"
+            />
+            <button
+              type="submit"
+              id="salesAddBtn"
+              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-semibold transition"
+            >
+              Simpan
+            </button>
+            <button
+              type="button"
+              id="salesUpdateBtn"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-semibold transition hidden"
+            >
+              Update
+            </button>
+            <button
+              type="button"
+              id="salesCancelBtn"
+              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold transition hidden"
+            >
+              Batal
+            </button>
+          </form>
+        </div>
+
+        <!-- Tabel Penjualan Harian -->
+        <div class="bg-white rounded-lg shadow p-5 overflow-x-auto">
+          <h3 class="text-lg font-semibold text-green-700 mb-4">Tabel Penjualan Harian</h3>
+          <table class="w-full text-left text-gray-700">
+            <thead class="border-b border-gray-300">
+              <tr>
+                <th class="py-2 px-3">Menu</th>
+                <th class="py-2 px-3 w-24">Jumlah</th>
+                <th class="py-2 px-3 w-32">Harga (Rp)</th>
+                <th class="py-2 px-3 w-36">Omzet (Rp)</th>
+                <th class="py-2 px-3 w-36">Profit (Rp)</th>
+                <th class="py-2 px-3 w-28 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="salesList" class="divide-y divide-gray-200"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Pengeluaran Tab -->
+      <section data-content="pengeluaran" class="tab-content max-w-4xl mx-auto hidden">
+        <h2 class="text-2xl font-bold text-green-700 mb-6">Pengeluaran</h2>
+
+        <!-- Form Input Pengeluaran -->
+        <div class="bg-white rounded-lg shadow p-5 mb-8">
+          <h3 class="text-lg font-semibold text-green-700 mb-4">Input Pengeluaran Harian</h3>
+          <form id="expenseForm" class="flex flex-col sm:flex-row sm:items-center gap-4">
+            <input
+              type="text"
+              id="expenseDescInput"
+              placeholder="Keterangan (bahan, listrik, dll)"
+              class="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+              required
+            />
+            <input
+              type="number"
+              id="expenseAmountInput"
+              placeholder="Jumlah (Rp)"
+              min="0"
+              class="w-36 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+              required
+            />
+            <button
+              type="submit"
+              id="expenseAddBtn"
+              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-semibold transition"
+            >
+              Simpan
+            </button>
+            <button
+              type="button"
+              id="expenseUpdateBtn"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-semibold transition hidden"
+            >
+              Update
+            </button>
+            <button
+              type="button"
+              id="expenseCancelBtn"
+              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold transition hidden"
+            >
+              Batal
+            </button>
+          </form>
+        </div>
+
+        <!-- Tabel Pengeluaran -->
+        <div class="bg-white rounded-lg shadow p-5 overflow-x-auto">
+          <h3 class="text-lg font-semibold text-green-700 mb-4">Tabel Pengeluaran Harian</h3>
+          <table class="w-full text-left text-gray-700">
+            <thead class="border-b border-gray-300">
+              <tr>
+                <th class="py-2 px-3">Keterangan</th>
+                <th class="py-2 px-3 w-36">Jumlah (Rp)</th>
+                <th class="py-2 px-3 w-28 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="expenseList" class="divide-y divide-gray-200"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Pemasukan Tab -->
+      <section data-content="pemasukan" class="tab-content max-w-4xl mx-auto hidden">
+        <h2 class="text-2xl font-bold text-green-700 mb-6">Pemasukan</h2>
+        <div class="bg-white rounded-lg shadow p-5">
+          <h3 class="text-lg font-semibold text-green-700 mb-4">Laporan Omzet Kotor</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+            <div class="p-4 border rounded shadow-sm">
+              <div class="text-green-600 text-3xl font-extrabold" id="pemasukanHarian">Rp 0</div>
+              <div class="mt-1 text-gray-600 font-semibold">Harian</div>
+            </div>
+            <div class="p-4 border rounded shadow-sm">
+              <div class="text-green-600 text-3xl font-extrabold" id="pemasukanMingguan">Rp 0</div>
+              <div class="mt-1 text-gray-600 font-semibold">Mingguan</div>
+            </div>
+            <div class="p-4 border rounded shadow-sm">
+              <div class="text-green-600 text-3xl font-extrabold" id="pemasukanBulanan">Rp 0</div>
+              <div class="mt-1 text-gray-600 font-semibold">Bulanan</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Profit Tab -->
+      <section data-content="profit" class="tab-content max-w-4xl mx-auto hidden">
+        <h2 class="text-2xl font-bold text-green-700 mb-6">Profit</h2>
+        <div class="bg-white rounded-lg shadow p-5">
+          <h3 class="text-lg font-semibold text-green-700 mb-4">Laporan Profit (berdasarkan % profit per menu)</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+            <div class="p-4 border rounded shadow-sm">
+              <div class="text-blue-600 text-3xl font-extrabold" id="profitHarianDetail">Rp 0</div>
+              <div class="mt-1 text-gray-600 font-semibold">Harian</div>
+            </div>
+            <div class="p-4 border rounded shadow-sm">
+              <div class="text-blue-600 text-3xl font-extrabold" id="profitMingguanDetail">Rp 0</div>
+              <div class="mt-1 text-gray-600 font-semibold">Mingguan</div>
+            </div>
+            <div class="p-4 border rounded shadow-sm">
+              <div class="text-blue-600 text-3xl font-extrabold" id="profitBulananDetail">Rp 0</div>
+              <div class="mt-1 text-gray-600 font-semibold">Bulanan</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Grafik / Laporan Tab -->
+      <section data-content="grafik" class="tab-content max-w-5xl mx-auto hidden">
+        <h2 class="text-2xl font-bold text-green-700 mb-6">Grafik / Laporan</h2>
+        <div class="mb-6 flex flex-wrap gap-4 items-center">
+          <label for="chartPeriod" class="font-semibold text-gray-700">Pilih Periode:</label>
+          <select id="chartPeriod" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400">
+            <option value="daily" selected>Harian</option>
+            <option value="weekly">Mingguan</option>
+            <option value="monthly">Bulanan</option>
+          </select>
+        </div>
+        <div class="bg-white rounded-lg shadow p-5 mb-8">
+          <h3 class="text-lg font-semibold text-green-700 mb-4">Grafik Omzet Kotor</h3>
+          <canvas id="chartOmzet" class="w-full max-w-full h-64"></canvas>
+        </div>
+        <div class="bg-white rounded-lg shadow p-5 mb-8">
+          <h3 class="text-lg font-semibold text-green-700 mb-4">Grafik Profit Bersih</h3>
+          <canvas id="chartProfit" class="w-full max-w-full h-64"></canvas>
+        </div>
+        <div class="bg-white rounded-lg shadow p-5">
+          <h3 class="text-lg font-semibold text-green-700 mb-4">Grafik Pengeluaran</h3>
+          <canvas id="chartExpense" class="w-full max-w-full h-64"></canvas>
+        </div>
+      </section>
+
+      <!-- Kalkulator Tab -->
+      <section data-content="kalkulator" class="tab-content max-w-md mx-auto hidden">
+        <h2 class="text-2xl font-bold text-green-700 mb-6">Kalkulator</h2>
+        <div class="bg-white rounded-lg shadow p-5 max-w-md mx-auto">
+          <div id="calcDisplay" class="bg-gray-100 rounded mb-4 p-3 text-right text-2xl font-mono overflow-x-auto select-text" tabindex="0" aria-label="Display kalkulator"></div>
+          <div class="grid grid-cols-4 gap-3">
+            <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded py-3" data-val="7">7</button>
+            <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded py-3" data-val="8">8</button>
+            <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded py-3" data-val="9">9</button>
+            <button class="calc-btn bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded py-3" data-val="/">÷</button>
+
+            <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded py-3" data-val="4">4</button>
+            <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded py-3" data-val="5">5</button>
+            <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded py-3" data-val="6">6</button>
+            <button class="calc-btn bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded py-3" data-val="*">×</button>
+
+            <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded py-3" data-val="1">1</button>
+            <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded py-3" data-val="2">2</button>
+            <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded py-3" data-val="3">3</button>
+            <button class="calc-btn bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded py-3" data-val="-">−</button>
+
+            <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded py-3" data-val="0">0</button>
+            <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded py-3" data-val=".">.</button>
+            <button id="calcClearBtn" class="calc-btn bg-red-600 hover:bg-red-700 text-white font-semibold rounded py-3">C</button>
+            <button class="calc-btn bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded py-3" data-val="+">+</button>
+
+            <button id="calcEqualsBtn" class="col-span-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded py-3">=</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal Confirm Reset -->
+  <div
+    id="modalReset"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalResetTitle"
+  >
+    <div class="bg-white rounded-lg shadow-lg max-w-sm w-full p-6">
+      <h3 id="modalResetTitle" class="text-lg font-semibold text-red-600 mb-4">
+        Konfirmasi Reset Data
+      </h3>
+      <p class="mb-6 text-gray-700">
+        Apakah Anda yakin ingin menghapus semua data? Tindakan ini tidak dapat
+        dibatalkan.
+      </p>
+      <div class="flex justify-end gap-4">
+        <button
+          id="cancelResetBtn"
+          class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-gray-400"
+        >
+          Batal
+        </button>
+        <button
+          id="confirmResetBtn"
+          class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white font-semibold focus:outline-none focus:ring-2 focus:ring-red-400"
+        >
+          Hapus Semua
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    (() => {
+      // Utils
+      function rupiahFormat(number) {
+        return (
+          'Rp ' +
+          number
+            .toFixed(0)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+        );
+      }
+
+      function parseDateToYMD(date) {
+        const d = new Date(date);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      function getWeekNumber(d) {
+        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        const dayNum = d.getUTCDay() || 7;
+        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+        return weekNo;
+      }
+
+      // Data keys
+      const LS_KEYS = {
+        MENU: 'jusapp_menu',
+        SALES: 'jusapp_sales',
+        EXPENSES: 'jusapp_expenses',
+      };
+
+      // Elements
+      const sidebar = document.getElementById('sidebar');
+      const openSidebarBtn = document.getElementById('openSidebarBtn');
+      const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+      const navButtons = sidebar.querySelectorAll('button[data-tab]');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const resetDataBtn = document.getElementById('resetDataBtn');
+      const modalReset = document.getElementById('modalReset');
+      const cancelResetBtn = document.getElementById('cancelResetBtn');
+      const confirmResetBtn = document.getElementById('confirmResetBtn');
+
+      // Dashboard elements
+      const omzetHarianEl = document.getElementById('omzetHarian');
+      const omzetMingguanEl = document.getElementById('omzetMingguan');
+      const omzetBulananEl = document.getElementById('omzetBulanan');
+      const profitHarianEl = document.getElementById('profitHarian');
+      const profitMingguanEl = document.getElementById('profitMingguan');
+      const profitBulananEl = document.getElementById('profitBulanan');
+
+      // Pemasukan elements
+      const pemasukanHarianEl = document.getElementById('pemasukanHarian');
+      const pemasukanMingguanEl = document.getElementById('pemasukanMingguan');
+      const pemasukanBulananEl = document.getElementById('pemasukanBulanan');
+
+      // Profit tab elements
+      const profitHarianDetailEl = document.getElementById('profitHarianDetail');
+      const profitMingguanDetailEl = document.getElementById('profitMingguanDetail');
+      const profitBulananDetailEl = document.getElementById('profitBulananDetail');
+
+      // Menu management elements
+      const menuForm = document.getElementById('menuForm');
+      const menuNameInput = document.getElementById('menuNameInput');
+      const menuPriceInput = document.getElementById('menuPriceInput');
+      const menuProfitInput = document.getElementById('menuProfitInput');
+      const menuAddBtn = document.getElementById('menuAddBtn');
+      const menuUpdateBtn = document.getElementById('menuUpdateBtn');
+      const menuCancelBtn = document.getElementById('menuCancelBtn');
+      const menuListTbody = document.getElementById('menuList');
+
+      // Sales elements
+      const salesForm = document.getElementById('salesForm');
+      const salesMenuSelect = document.getElementById('salesMenuSelect');
+      const salesQtyInput = document.getElementById('salesQtyInput');
+      const salesOmzetDisplay = document.getElementById('salesOmzetDisplay');
+      const salesProfitDisplay = document.getElementById('salesProfitDisplay');
+      const salesAddBtn = document.getElementById('salesAddBtn');
+      const salesUpdateBtn = document.getElementById('salesUpdateBtn');
+      const salesCancelBtn = document.getElementById('salesCancelBtn');
+      const salesListTbody = document.getElementById('salesList');
+
+      // Expense elements
+      const expenseForm = document.getElementById('expenseForm');
+      const expenseDescInput = document.getElementById('expenseDescInput');
+      const expenseAmountInput = document.getElementById('expenseAmountInput');
+      const expenseAddBtn = document.getElementById('expenseAddBtn');
+      const expenseUpdateBtn = document.getElementById('expenseUpdateBtn');
+      const expenseCancelBtn = document.getElementById('expenseCancelBtn');
+      const expenseListTbody = document.getElementById('expenseList');
+
+      // Chart elements
+      const chartOmzetCtx = document.getElementById('chartOmzet').getContext('2d');
+      const chartProfitCtx = document.getElementById('chartProfit').getContext('2d');
+      const chartExpenseCtx = document.getElementById('chartExpense').getContext('2d');
+      const chartPeriodSelect = document.getElementById('chartPeriod');
+
+      // Kalkulator elements
+      const calcDisplay = document.getElementById('calcDisplay');
+      const calcButtons = document.querySelectorAll('.calc-btn');
+      const calcClearBtn = document.getElementById('calcClearBtn');
+      const calcEqualsBtn = document.getElementById('calcEqualsBtn');
+      const openCalcFromDashboardBtn = document.getElementById('openCalcFromDashboard');
+
+      // State
+      let menus = [];
+      let sales = [];
+      let expenses = [];
+
+      // Editing states
+      let editingMenuId = null;
+      let editingSalesId = null;
+      let editingExpenseId = null;
+
+      // Chart instances
+      let chartOmzet = null;
+      let chartProfit = null;
+      let chartExpense = null;
+
+      // Kalkulator state
+      let calcExpression = '';
+
+      // Initialize app
+      function init() {
+        loadData();
+        renderMenuList();
+        renderSalesMenuOptions();
+        renderSalesList();
+        renderExpenseList();
+        updateDashboard();
+        updatePemasukanTab();
+        updateProfitTab();
+        initCharts();
+        bindEvents();
+        showTab('dashboard');
+      }
+
+      // Load data from localStorage
+      function loadData() {
+        menus = JSON.parse(localStorage.getItem(LS_KEYS.MENU)) || [];
+        sales = JSON.parse(localStorage.getItem(LS_KEYS.SALES)) || [];
+        expenses = JSON.parse(localStorage.getItem(LS_KEYS.EXPENSES)) || [];
+      }
+
+      // Save data to localStorage
+      function saveData() {
+        localStorage.setItem(LS_KEYS.MENU, JSON.stringify(menus));
+        localStorage.setItem(LS_KEYS.SALES, JSON.stringify(sales));
+        localStorage.setItem(LS_KEYS.EXPENSES, JSON.stringify(expenses));
+      }
+
+      // Generate unique ID
+      function generateId() {
+        return '_' + Math.random().toString(36).substr(2, 9);
+      }
+
+      // Render menu list table
+      function renderMenuList() {
+        menuListTbody.innerHTML = '';
+        if (menus.length === 0) {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 4;
+          td.className = 'py-3 px-3 text-center text-gray-400';
+          td.textContent = 'Belum ada menu.';
+          tr.appendChild(td);
+          menuListTbody.appendChild(tr);
+          return;
+        }
+        menus.forEach((menu) => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-green-50';
+          const tdName = document.createElement('td');
+          tdName.className = 'py-2 px-3 font-medium';
+          tdName.textContent = menu.name;
+          const tdPrice = document.createElement('td');
+          tdPrice.className = 'py-2 px-3';
+          tdPrice.textContent = rupiahFormat(menu.price);
+          const tdProfit = document.createElement('td');
+          tdProfit.className = 'py-2 px-3 text-center font-semibold text-green-700';
+          tdProfit.textContent = menu.profitPercent + ' %';
+          const tdActions = document.createElement('td');
+          tdActions.className = 'py-2 px-3 text-center space-x-2';
+
+          const editBtn = document.createElement('button');
+          editBtn.className =
+            'text-blue-600 hover:text-blue-800 focus:outline-none';
+          editBtn.title = 'Edit Menu';
+          editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+          editBtn.addEventListener('click', () => {
+            startEditMenu(menu.id);
+          });
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className =
+            'text-red-600 hover:text-red-800 focus:outline-none';
+          deleteBtn.title = 'Hapus Menu';
+          deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+          deleteBtn.addEventListener('click', () => {
+            if (
+              confirm(
+                `Hapus menu "${menu.name}"? Data penjualan terkait tidak akan terhapus.`
+              )
+            ) {
+              deleteMenu(menu.id);
+            }
+          });
+
+          tdActions.appendChild(editBtn);
+          tdActions.appendChild(deleteBtn);
+
+          tr.appendChild(tdName);
+          tr.appendChild(tdPrice);
+          tr.appendChild(tdProfit);
+          tr.appendChild(tdActions);
+
+          menuListTbody.appendChild(tr);
+        });
+      }
+
+      // Render sales menu dropdown options
+      function renderSalesMenuOptions() {
+        salesMenuSelect.innerHTML = '<option value="" disabled selected>Pilih Menu</option>';
+        menus.forEach((menu) => {
+          const option = document.createElement('option');
+          option.value = menu.id;
+          option.textContent = `${menu.name} - ${rupiahFormat(menu.price)} (${menu.profitPercent}%)`;
+          salesMenuSelect.appendChild(option);
+        });
+      }
+
+      // Render sales list table
+      function renderSalesList() {
+        salesListTbody.innerHTML = '';
+        if (sales.length === 0) {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 6;
+          td.className = 'py-3 px-3 text-center text-gray-400';
+          td.textContent = 'Belum ada data penjualan.';
+          tr.appendChild(td);
+          salesListTbody.appendChild(tr);
+          return;
+        }
+        sales.forEach((sale) => {
+          const menu = menus.find((m) => m.id === sale.menuId);
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-green-50';
+          const tdName = document.createElement('td');
+          tdName.className = 'py-2 px-3 font-medium';
+          tdName.textContent = menu ? menu.name : '[Menu dihapus]';
+          const tdQty = document.createElement('td');
+          tdQty.className = 'py-2 px-3';
+          tdQty.textContent = sale.qty;
+          const tdPrice = document.createElement('td');
+          tdPrice.className = 'py-2 px-3';
+          tdPrice.textContent = menu ? rupiahFormat(menu.price) : '-';
+          const tdOmzet = document.createElement('td');
+          tdOmzet.className = 'py-2 px-3';
+          const omzet = menu ? menu.price * sale.qty : 0;
+          tdOmzet.textContent = rupiahFormat(omzet);
+          const tdProfit = document.createElement('td');
+          tdProfit.className = 'py-2 px-3';
+          const profit = menu ? Math.round(omzet * (menu.profitPercent / 100)) : 0;
+          tdProfit.textContent = rupiahFormat(profit);
+          const tdActions = document.createElement('td');
+          tdActions.className = 'py-2 px-3 text-center space-x-2';
+
+          const editBtn = document.createElement('button');
+          editBtn.className =
+            'text-blue-600 hover:text-blue-800 focus:outline-none';
+          editBtn.title = 'Edit Penjualan';
+          editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+          editBtn.addEventListener('click', () => {
+            startEditSales(sale.id);
+          });
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className =
+            'text-red-600 hover:text-red-800 focus:outline-none';
+          deleteBtn.title = 'Hapus Penjualan';
+          deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+          deleteBtn.addEventListener('click', () => {
+            if (confirm('Hapus data penjualan ini?')) {
+              deleteSales(sale.id);
+            }
+          });
+
+          tdActions.appendChild(editBtn);
+          tdActions.appendChild(deleteBtn);
+
+          tr.appendChild(tdName);
+          tr.appendChild(tdQty);
+          tr.appendChild(tdPrice);
+          tr.appendChild(tdOmzet);
+          tr.appendChild(tdProfit);
+          tr.appendChild(tdActions);
+
+          salesListTbody.appendChild(tr);
+        });
+      }
+
+      // Render expense list table
+      function renderExpenseList() {
+        expenseListTbody.innerHTML = '';
+        if (expenses.length === 0) {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 3;
+          td.className = 'py-3 px-3 text-center text-gray-400';
+          td.textContent = 'Belum ada data pengeluaran.';
+          tr.appendChild(td);
+          expenseListTbody.appendChild(tr);
+          return;
+        }
+        expenses.forEach((expense) => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-green-50';
+          const tdDesc = document.createElement('td');
+          tdDesc.className = 'py-2 px-3 font-medium';
+          tdDesc.textContent = expense.description;
+          const tdAmount = document.createElement('td');
+          tdAmount.className = 'py-2 px-3';
+          tdAmount.textContent = rupiahFormat(expense.amount);
+          const tdActions = document.createElement('td');
+          tdActions.className = 'py-2 px-3 text-center space-x-2';
+
+          const editBtn = document.createElement('button');
+          editBtn.className =
+            'text-blue-600 hover:text-blue-800 focus:outline-none';
+          editBtn.title = 'Edit Pengeluaran';
+          editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+          editBtn.addEventListener('click', () => {
+            startEditExpense(expense.id);
+          });
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className =
+            'text-red-600 hover:text-red-800 focus:outline-none';
+          deleteBtn.title = 'Hapus Pengeluaran';
+          deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+          deleteBtn.addEventListener('click', () => {
+            if (confirm('Hapus data pengeluaran ini?')) {
+              deleteExpense(expense.id);
+            }
+          });
+
+          tdActions.appendChild(editBtn);
+          tdActions.appendChild(deleteBtn);
+
+          tr.appendChild(tdDesc);
+          tr.appendChild(tdAmount);
+          tr.appendChild(tdActions);
+
+          expenseListTbody.appendChild(tr);
+        });
+      }
+
+      // Start editing menu
+      function startEditMenu(id) {
+        const menu = menus.find((m) => m.id === id);
+        if (!menu) return;
+        editingMenuId = id;
+        menuNameInput.value = menu.name;
+        menuPriceInput.value = menu.price;
+        menuProfitInput.value = menu.profitPercent;
+        menuAddBtn.classList.add('hidden');
+        menuUpdateBtn.classList.remove('hidden');
+        menuCancelBtn.classList.remove('hidden');
+        menuNameInput.focus();
+      }
+
+      // Cancel editing menu
+      function cancelEditMenu() {
+        editingMenuId = null;
+        menuForm.reset();
+        menuAddBtn.classList.remove('hidden');
+        menuUpdateBtn.classList.add('hidden');
+        menuCancelBtn.classList.add('hidden');
+      }
+
+      // Delete menu
+      function deleteMenu(id) {
+        menus = menus.filter((m) => m.id !== id);
+        saveData();
+        renderMenuList();
+        renderSalesMenuOptions();
+        if (editingMenuId === id) cancelEditMenu();
+      }
+
+      // Start editing sales
+      function startEditSales(id) {
+        const sale = sales.find((s) => s.id === id);
+        if (!sale) return;
+        editingSalesId = id;
+        salesMenuSelect.value = sale.menuId;
+        salesQtyInput.value = sale.qty;
+        updateSalesCalculations();
+        salesAddBtn.classList.add('hidden');
+        salesUpdateBtn.classList.remove('hidden');
+        salesCancelBtn.classList.remove('hidden');
+        salesMenuSelect.focus();
+      }
+
+      // Cancel editing sales
+      function cancelEditSales() {
+        editingSalesId = null;
+        salesForm.reset();
+        salesOmzetDisplay.value = '';
+        salesProfitDisplay.value = '';
+        salesAddBtn.classList.remove('hidden');
+        salesUpdateBtn.classList.add('hidden');
+        salesCancelBtn.classList.add('hidden');
+      }
+
+      // Delete sales
+      function deleteSales(id) {
+        sales = sales.filter((s) => s.id !== id);
+        saveData();
+        renderSalesList();
+        updateDashboard();
+        updatePemasukanTab();
+        updateProfitTab();
+        updateCharts();
+        if (editingSalesId === id) cancelEditSales();
+      }
+
+      // Start editing expense
+      function startEditExpense(id) {
+        const expense = expenses.find((e) => e.id === id);
+        if (!expense) return;
+        editingExpenseId = id;
+        expenseDescInput.value = expense.description;
+        expenseAmountInput.value = expense.amount;
+        expenseAddBtn.classList.add('hidden');
+        expenseUpdateBtn.classList.remove('hidden');
+        expenseCancelBtn.classList.remove('hidden');
+        expenseDescInput.focus();
+      }
+
+      // Cancel editing expense
+      function cancelEditExpense() {
+        editingExpenseId = null;
+        expenseForm.reset();
+        expenseAddBtn.classList.remove('hidden');
+        expenseUpdateBtn.classList.add('hidden');
+        expenseCancelBtn.classList.add('hidden');
+      }
+
+      // Delete expense
+      function deleteExpense(id) {
+        expenses = expenses.filter((e) => e.id !== id);
+        saveData();
+        renderExpenseList();
+        updateDashboard();
+        updatePemasukanTab();
+        updateProfitTab();
+        updateCharts();
+        if (editingExpenseId === id) cancelEditExpense();
+      }
+
+      // Update sales omzet and profit display
+      function updateSalesCalculations() {
+        const menuId = salesMenuSelect.value;
+        const qty = parseInt(salesQtyInput.value);
+        if (!menuId || !qty || qty < 1) {
+          salesOmzetDisplay.value = '';
+          salesProfitDisplay.value = '';
+          return;
+        }
+        const menu = menus.find((m) => m.id === menuId);
+        if (!menu) {
+          salesOmzetDisplay.value = '';
+          salesProfitDisplay.value = '';
+          return;
+        }
+        const omzet = menu.price * qty;
+        const profit = Math.round(omzet * (menu.profitPercent / 100));
+        salesOmzetDisplay.value = rupiahFormat(omzet);
+        salesProfitDisplay.value = rupiahFormat(profit);
+      }
+
+      // Calculate omzet and profit for given period
+      // period: 'daily', 'weekly', 'monthly'
+      // date: Date object (default today)
+      function calculateOmzetProfit(period, date = new Date()) {
+        let omzet = 0;
+        let profit = 0;
+
+        // Filter sales by period
+        const filteredSales = sales.filter((sale) => {
+          const saleDate = new Date(sale.date);
+          if (period === 'daily') {
+            return (
+              saleDate.getFullYear() === date.getFullYear() &&
+              saleDate.getMonth() === date.getMonth() &&
+              saleDate.getDate() === date.getDate()
+            );
+          } else if (period === 'weekly') {
+            return (
+              saleDate.getFullYear() === date.getFullYear() &&
+              getWeekNumber(saleDate) === getWeekNumber(date)
+            );
+          } else if (period === 'monthly') {
+            return (
+              saleDate.getFullYear() === date.getFullYear() &&
+              saleDate.getMonth() === date.getMonth()
+            );
+          }
+          return false;
+        });
+
+        filteredSales.forEach((sale) => {
+          const menu = menus.find((m) => m.id === sale.menuId);
+          if (menu) {
+            const saleOmzet = menu.price * sale.qty;
+            omzet += saleOmzet;
+            profit += Math.round(saleOmzet * (menu.profitPercent / 100));
+          }
+        });
+
+        return { omzet, profit };
+      }
+
+      // Calculate total pengeluaran for given period
+      function calculateExpenses(period, date = new Date()) {
+        let total = 0;
+        const filteredExpenses = expenses.filter((expense) => {
+          const expenseDate = new Date(expense.date);
+          if (period === 'daily') {
+            return (
+              expenseDate.getFullYear() === date.getFullYear() &&
+              expenseDate.getMonth() === date.getMonth() &&
+              expenseDate.getDate() === date.getDate()
+            );
+          } else if (period === 'weekly') {
+            return (
+              expenseDate.getFullYear() === date.getFullYear() &&
+              getWeekNumber(expenseDate) === getWeekNumber(date)
+            );
+          } else if (period === 'monthly') {
+            return (
+              expenseDate.getFullYear() === date.getFullYear() &&
+              expenseDate.getMonth() === date.getMonth()
+            );
+          }
+          return false;
+        });
+        filteredExpenses.forEach((expense) => {
+          total += expense.amount;
+        });
+        return total;
+      }
+
+      // Update dashboard numbers
+      function updateDashboard() {
+        const now = new Date();
+        const daily = calculateOmzetProfit('daily', now);
+        const weekly = calculateOmzetProfit('weekly', now);
+        const monthly = calculateOmzetProfit('monthly', now);
+
+        omzetHarianEl.textContent = rupiahFormat(daily.omzet);
+        omzetMingguanEl.textContent = rupiahFormat(weekly.omzet);
+        omzetBulananEl.textContent = rupiahFormat(monthly.omzet);
+
+        profitHarianEl.textContent = rupiahFormat(daily.profit);
+        profitMingguanEl.textContent = rupiahFormat(weekly.profit);
+        profitBulananEl.textContent = rupiahFormat(monthly.profit);
+      }
+
+      // Update pemasukan tab numbers (omzet kotor)
+      function updatePemasukanTab() {
+        const now = new Date();
+        const daily = calculateOmzetProfit('daily', now);
+        const weekly = calculateOmzetProfit('weekly', now);
+        const monthly = calculateOmzetProfit('monthly', now);
+
+        pemasukanHarianEl.textContent = rupiahFormat(daily.omzet);
+        pemasukanMingguanEl.textContent = rupiahFormat(weekly.omzet);
+        pemasukanBulananEl.textContent = rupiahFormat(monthly.omzet);
+      }
+
+      // Update profit tab numbers
+      function updateProfitTab() {
+        const now = new Date();
+        const daily = calculateOmzetProfit('daily', now);
+        const weekly = calculateOmzetProfit('weekly', now);
+        const monthly = calculateOmzetProfit('monthly', now);
+
+        profitHarianDetailEl.textContent = rupiahFormat(daily.profit);
+        profitMingguanDetailEl.textContent = rupiahFormat(weekly.profit);
+        profitBulananDetailEl.textContent = rupiahFormat(monthly.profit);
+      }
+
+      // Show tab content and highlight nav button
+      function showTab(tabName) {
+        tabContents.forEach((section) => {
+          if (section.dataset.content === tabName) {
+            section.classList.remove('hidden');
+          } else {
+            section.classList.add('hidden');
+          }
+        });
+        navButtons.forEach((btn) => {
+          if (btn.dataset.tab === tabName) {
+            btn.classList.add('bg-green-100', 'text-green-700');
+            btn.classList.remove('hover:bg-green-50');
+            btn.setAttribute('aria-current', 'page');
+          } else {
+            btn.classList.remove('bg-green-100', 'text-green-700');
+            btn.classList.add('hover:bg-green-50');
+            btn.removeAttribute('aria-current');
+          }
+        });
+        if (window.innerWidth < 768) {
+          sidebar.classList.add('-translate-x-full');
+        }
+      }
+
+      // Bind event listeners
+      function bindEvents() {
+        openSidebarBtn.addEventListener('click', () => {
+          sidebar.classList.remove('-translate-x-full');
+        });
+        closeSidebarBtn.addEventListener('click', () => {
+          sidebar.classList.add('-translate-x-full');
+        });
+
+        navButtons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            showTab(btn.dataset.tab);
+          });
+        });
+
+        menuForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          if (editingMenuId) return;
+          const name = menuNameInput.value.trim();
+          const price = parseInt(menuPriceInput.value);
+          const profitPercent = parseInt(menuProfitInput.value);
+          if (!name || isNaN(price) || price < 0 || isNaN(profitPercent) || profitPercent < 0 || profitPercent > 100) return;
+          if (
+            menus.some(
+              (m) => m.name.toLowerCase() === name.toLowerCase()
+            )
+          ) {
+            alert('Nama menu sudah ada.');
+            return;
+          }
+          menus.push({ id: generateId(), name, price, profitPercent });
+          saveData();
+          renderMenuList();
+          renderSalesMenuOptions();
+          menuForm.reset();
+          salesMenuSelect.value = '';
+          updateSalesCalculations();
+        });
+
+        menuUpdateBtn.addEventListener('click', () => {
+          if (!editingMenuId) return;
+          const name = menuNameInput.value.trim();
+          const price = parseInt(menuPriceInput.value);
+          const profitPercent = parseInt(menuProfitInput.value);
+          if (!name || isNaN(price) || price < 0 || isNaN(profitPercent) || profitPercent < 0 || profitPercent > 100) return;
+          if (
+            menus.some(
+              (m) =>
+                m.name.toLowerCase() === name.toLowerCase() &&
+                m.id !== editingMenuId
+            )
+          ) {
+            alert('Nama menu sudah ada.');
+            return;
+          }
+          const menu = menus.find((m) => m.id === editingMenuId);
+          if (!menu) return;
+          menu.name = name;
+          menu.price = price;
+          menu.profitPercent = profitPercent;
+          saveData();
+          renderMenuList();
+          renderSalesMenuOptions();
+          cancelEditMenu();
+          updateSalesCalculations();
+          updateDashboard();
+          updatePemasukanTab();
+          updateProfitTab();
+          updateCharts();
+        });
+
+        menuCancelBtn.addEventListener('click', () => {
+          cancelEditMenu();
+        });
+
+        salesMenuSelect.addEventListener('change', updateSalesCalculations);
+        salesQtyInput.addEventListener('input', updateSalesCalculations);
+
+        salesForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          if (editingSalesId) return;
+          const menuId = salesMenuSelect.value;
+          const qty = parseInt(salesQtyInput.value);
+          if (!menuId || isNaN(qty) || qty < 1) return;
+          sales.push({
+            id: generateId(),
+            menuId,
+            qty,
+            date: new Date().toISOString(),
+          });
+          saveData();
+          renderSalesList();
+          salesForm.reset();
+          salesOmzetDisplay.value = '';
+          salesProfitDisplay.value = '';
+          updateDashboard();
+          updatePemasukanTab();
+          updateProfitTab();
+          updateCharts();
+        });
+
+        salesUpdateBtn.addEventListener('click', () => {
+          if (!editingSalesId) return;
+          const menuId = salesMenuSelect.value;
+          const qty = parseInt(salesQtyInput.value);
+          if (!menuId || isNaN(qty) || qty < 1) return;
+          const sale = sales.find((s) => s.id === editingSalesId);
+          if (!sale) return;
+          sale.menuId = menuId;
+          sale.qty = qty;
+          sale.date = new Date().toISOString();
+          saveData();
+          renderSalesList();
+          cancelEditSales();
+          updateDashboard();
+          updatePemasukanTab();
+          updateProfitTab();
+          updateCharts();
+        });
+
+        salesCancelBtn.addEventListener('click', () => {
+          cancelEditSales();
+        });
+
+        expenseForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          if (editingExpenseId) return;
+          const desc = expenseDescInput.value.trim();
+          const amount = parseInt(expenseAmountInput.value);
+          if (!desc || isNaN(amount) || amount < 0) return;
+          expenses.push({
+            id: generateId(),
+            description: desc,
+            amount,
+            date: new Date().toISOString(),
+          });
+          saveData();
+          renderExpenseList();
+          expenseForm.reset();
+          updateDashboard();
+          updatePemasukanTab();
+          updateProfitTab();
+          updateCharts();
+        });
+
+        expenseUpdateBtn.addEventListener('click', () => {
+          if (!editingExpenseId) return;
+          const desc = expenseDescInput.value.trim();
+          const amount = parseInt(expenseAmountInput.value);
+          if (!desc || isNaN(amount) || amount < 0) return;
+          const expense = expenses.find((e) => e.id === editingExpenseId);
+          if (!expense) return;
+          expense.description = desc;
+          expense.amount = amount;
+          expense.date = new Date().toISOString();
+          saveData();
+          renderExpenseList();
+          cancelEditExpense();
+          updateDashboard();
+          updatePemasukanTab();
+          updateProfitTab();
+          updateCharts();
+        });
+
+        expenseCancelBtn.addEventListener('click', () => {
+          cancelEditExpense();
+        });
+
+        resetDataBtn.addEventListener('click', () => {
+          modalReset.classList.remove('hidden');
+        });
+
+        cancelResetBtn.addEventListener('click', () => {
+          modalReset.classList.add('hidden');
+        });
+
+        confirmResetBtn.addEventListener('click', () => {
+          menus = [];
+          sales = [];
+          expenses = [];
+          saveData();
+          renderMenuList();
+          renderSalesMenuOptions();
+          renderSalesList();
+          renderExpenseList();
+          updateDashboard();
+          updatePemasukanTab();
+          updateProfitTab();
+          updateCharts();
+          cancelEditMenu();
+          cancelEditSales();
+          cancelEditExpense();
+          modalReset.classList.add('hidden');
+          alert('Semua data telah dihapus.');
+        });
+
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !modalReset.classList.contains('hidden')) {
+            modalReset.classList.add('hidden');
+          }
+        });
+
+        chartPeriodSelect.addEventListener('change', () => {
+          updateCharts();
+        });
+
+        // Kalkulator buttons
+        calcButtons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const val = btn.dataset.val;
+            if (val) {
+              calcExpression += val;
+              updateCalcDisplay();
+            }
+          });
+        });
+
+        calcClearBtn.addEventListener('click', () => {
+          calcExpression = '';
+          updateCalcDisplay();
+        });
+
+        calcEqualsBtn.addEventListener('click', () => {
+          try {
+            // eslint-disable-next-line no-eval
+            const result = eval(calcExpression);
+            calcExpression = result.toString();
+            updateCalcDisplay();
+          } catch {
+            calcExpression = '';
+            calcDisplay.textContent = 'Error';
+          }
+        });
+
+        openCalcFromDashboardBtn.addEventListener('click', () => {
+          showTab('kalkulator');
+        });
+      }
+
+      // Update calculator display
+      function updateCalcDisplay() {
+        calcDisplay.textContent = calcExpression || '0';
+      }
+
+      // Initialize charts
+      function initCharts() {
+        chartOmzet = new Chart(chartOmzetCtx, {
+          type: 'bar',
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: 'Omzet Kotor (Rp)',
+                data: [],
+                backgroundColor: 'rgba(34,197,94,0.7)',
+                borderRadius: 4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: (value) => rupiahFormat(value),
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  color: '#16a34a',
+                  font: { weight: 'bold' },
+                },
+              },
+              tooltip: {
+                callbacks: {
+                  label: (context) => rupiahFormat(context.parsed.y),
+                },
+              },
+            },
+          },
+        });
+
+        chartProfit = new Chart(chartProfitCtx, {
+          type: 'line',
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: 'Profit Bersih (Rp)',
+                data: [],
+                borderColor: 'rgba(37,99,235,0.8)',
+                backgroundColor: 'rgba(37,99,235,0.3)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: (value) => rupiahFormat(value),
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  color: '#2563eb',
+                  font: { weight: 'bold' },
+                },
+              },
+              tooltip: {
+                callbacks: {
+                  label: (context) => rupiahFormat(context.parsed.y),
+                },
+              },
+            },
+          },
+        });
+
+        chartExpense = new Chart(chartExpenseCtx, {
+          type: 'bar',
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: 'Pengeluaran (Rp)',
+                data: [],
+                backgroundColor: 'rgba(220,38,38,0.7)',
+                borderRadius: 4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: (value) => rupiahFormat(value),
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  color: '#dc2626',
+                  font: { weight: 'bold' },
+                },
+              },
+              tooltip: {
+                callbacks: {
+                  label: (context) => rupiahFormat(context.parsed.y),
+                },
+              },
+            },
+          },
+        });
+
+        updateCharts();
+      }
+
+      // Update charts data
+      function updateCharts() {
+        const period = chartPeriodSelect.value;
+        const now = new Date();
+
+        // Prepare labels and data arrays
+        let labels = [];
+        let omzetData = [];
+        let profitData = [];
+        let expenseData = [];
+
+        if (period === 'daily') {
+          for (let i = 6; i >= 0; i--) {
+            const d = new Date(now);
+            d.setDate(d.getDate() - i);
+            labels.push(d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
+            const { omzet, profit } = calculateOmzetProfit('daily', d);
+            const expense = calculateExpenses('daily', d);
+            omzetData.push(omzet);
+            profitData.push(profit);
+            expenseData.push(expense);
+          }
+        } else if (period === 'weekly') {
+          for (let i = 11; i >= 0; i--) {
+            const d = new Date(now);
+            d.setDate(d.getDate() - i * 7);
+            const week = getWeekNumber(d);
+            labels.push(`Minggu ${week}`);
+            const { omzet, profit } = calculateOmzetProfit('weekly', d);
+            const expense = calculateExpenses('weekly', d);
+            omzetData.push(omzet);
+            profitData.push(profit);
+            expenseData.push(expense);
+          }
+        } else if (period === 'monthly') {
+          for (let i = 11; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            labels.push(d.toLocaleDateString('id-ID', { month: 'short', year: '2-digit' }));
+            const { omzet, profit } = calculateOmzetProfit('monthly', d);
+            const expense = calculateExpenses('monthly', d);
+            omzetData.push(omzet);
+            profitData.push(profit);
+            expenseData.push(expense);
+          }
+        }
+
+        chartOmzet.data.labels = labels;
+        chartOmzet.data.datasets[0].data = omzetData;
+        chartOmzet.update();
+
+        chartProfit.data.labels = labels;
+        chartProfit.data.datasets[0].data = profitData;
+        chartProfit.update();
+
+        chartExpense.data.labels = labels;
+        chartExpense.data.datasets[0].data = expenseData;
+        chartExpense.update();
+      }
+
+      // Initialize
+      init();
+    })();
+  </script>
+</body>
+</html>
